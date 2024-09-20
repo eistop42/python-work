@@ -6,11 +6,11 @@ class Programmer:
 
         self.all_salary = 0
         self.all_time = 0
-        self.salary_info = {'Junior': 10}
+        self.SALARY_INFO = {'Junior': 10, 'Middle': 15}
 
     def work(self, time):
         self.all_time += time
-        salary = self.salary_info['Junior']
+        salary = self.SALARY_INFO['Junior']
         self.all_salary = time * salary
         print(f'Отработал {time}')
 
