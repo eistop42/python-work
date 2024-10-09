@@ -70,6 +70,7 @@ class AbstractView(ABC):
         pass
 
 
+
 class GraphicView(AbstractView):
 
     def render_notes(self, notes):
