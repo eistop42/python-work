@@ -1,0 +1,30 @@
+select distinct city from grades;
+select distinct country from grades;
+select distinct group_name from grades;
+
+select *  from grades where average_grade < 4.5;
+select min(average_grade) from grades;
+select max(average_grade) from grades where country = 'Россия';
+
+select *  from grades where full_name = 'Иванов Иван Иванович';
+select *  from grades where full_name LIKE '%Иван%' AND average_grade > 4.5;
+
+select *  from grades
+where city = 'Челябинск' AND (group_name='Группа А' OR group_name='Группа B');
+
+select *  from grades where city = 'Пенза' OR country = 'Россия';
+
+select *  from grades where average_grade BETWEEN 4.3 and 4.5;
+
+
+select city, count(full_name) from grades
+group by city;
+
+
+select country, count(full_name) from grades
+group by country ;
+
+
+select group_name, count(full_name) as count from grades
+group by group_name
+order by count desc
