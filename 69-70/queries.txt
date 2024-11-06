@@ -1,0 +1,27 @@
+--Найти фио всех студентов, которые получили между 4 и 8 баллами по любому предмету
+--JOIN, BETWEEN
+
+select fio, grade from grade join student
+on student.id = grade.student_id
+where grade between 4 and 8
+
+
+--Вывести фио студента и количество предеметов, по которым у него есть оценка
+--JOIN, GROUP, COUNT
+
+select fio, count(grade) from grade join student
+on student.id = grade.student_id
+group by fio
+
+--
+--Вывести фио студентов и оценки по математике. Отсортируйте по убыванию
+--JOIN, ORDER BY,
+
+select fio, grade, name from grade join student
+on student.id = grade.student_id
+join subject on subject.id = grade.subject_id
+where name = 'Математика'
+order by grade desc
+
+
+
