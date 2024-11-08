@@ -1,0 +1,97 @@
+--Найти фио всех студентов, которые получили между 4 и 8 баллами по любому предмету
+--JOIN, BETWEEN
+
+select fio, grade from grade join student
+on student.id = grade.student_id
+where grade between 4 and 8
+
+
+--Вывести фио студента и количество предеметов, по которым у него есть оценка
+--JOIN, GROUP, COUNT
+
+select fio, count(grade) from grade join student
+on student.id = grade.student_id
+group by fio
+
+--
+--Вывести фио студентов и оценки по математике. Отсортируйте по убыванию
+--JOIN, ORDER BY,
+
+select fio, grade, name from grade join student
+on student.id = grade.student_id
+join subject on subject.id = grade.subject_id
+where name = 'Математика'
+order by grade desc
+
+
+--Найти сколько студентов, учатся в каждой группе
+--GROUP, COUNT
+
+select name, count(*) as count from
+student join class
+on student.class_id = class.id
+group by name
+having count(*) > 8
+
+/*Найти среднюю оценку по каждому предмету для всех студентов.
+ Например, если по математике среди всех студентов оценки : 4, 5, 12. То средняя будет 7. */
+
+select name, avg(grade)
+from subject join grade
+on subject.id = grade.subject_id
+group by name
+
+--Найти количество студентов, получивших все оценки 10 и выше по всем предметам
+--GROUP, COUNT
+
+select count(fio) from
+student join grade
+on student.id = grade.id
+where grade >=10
+
+--Вывести студентов, которые не сдали хотя бы один предмет (оценка ниже 6)
+
+select fio, grade, subject_id from
+grade join student
+on student.id = grade.student_id
+where grade < 8
+
+
+
+/*Получить список учеников, средний балл которых больше 4.5*/
+
+select fio, avg(grade) from
+grade join student
+on student.id = grade.student_id
+group by fio
+having avg(grade) > (select avg(grade) from grade)
+order by avg(grade) desc
+limit 3
+
+--Получить список студентов, email которых есть в списке
+
+select * from student
+where email in  ('vasiliev@mail.ru',  'kuznetsova@mail.ru')
+
+
+--Получить среднюю оценку по каждому ученику и предмету
+
+select fio, subject.name, avg(grade) from
+grade join student
+on student.id = grade.student_id
+join subject
+on subject.id = grade.subject_id
+group by fio, subject.name
+
+
+/*Получить список учеников, средний балл которых равен максимальному среднему баллу*/
+select student_id, avg(grade) from grade
+group by student_id
+having avg(grade) = (
+        select avg(grade) from grade
+        group by student_id
+        order by avg(grade) desc
+        limit 1
+        )
+
+
