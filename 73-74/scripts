@@ -1,0 +1,37 @@
+
+create view students_grades as
+select fio, subject.name, grade
+from student join grade
+on student.id = grade.student_id
+join subject on subject.id = grade.subject_id
+order by fio, grade desc
+
+
+create trigger grade_change
+after update of grade on grade
+begin
+ INSERT INTO grades_log (student_id, old_grade, new_grade, datetime)
+ VALUES (new.student_id, OLD.grade, new.grade, datetime());
+end;
+
+
+/*Создать представление, которое выводит ФИО студентов и средний балл по всем предметам*/
+create view students_avg_grade as
+select fio, avg(grade)
+from student join grade
+on student.id = grade.student_id
+group by student_id
+order by avg(grade) desc;
+
+select * from students_avg_grade;
+
+/*
+Создать триггер, который срабатывает при обновлении fio в таблице student.
+И добавляет в таблицу fio_log id студента, старое имя, новое имя*/
+
+create trigger fio_change
+after update of fio on student
+begin
+    insert into fio_log (student_id, old_fio, new_fio, datetime)
+    values (new.id, old.fio, new.fio, datetime());
+end;
