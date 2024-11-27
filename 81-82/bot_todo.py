@@ -33,22 +33,22 @@ class TaskModelSQL:
     def __init__(self, db_name):
         self.db_name = db_name
 
-    def get_tasks(self):
+    def get_tasks(self, user_id):
         connection = sqlite3.connect(self.db_name)
         connection.row_factory = self._dict_factory
 
         cursor = connection.cursor()
-        rows = cursor.execute('select * from task').fetchall()
+        rows = cursor.execute('select * from task where user_id = ?', (user_id, )).fetchall()
         connection.close()
 
         return rows
 
-    def add_task(self, text):
+    def add_task(self, text, user_id):
         connection = sqlite3.connect(self.db_name)
         connection.row_factory = self._dict_factory
 
         cursor = connection.cursor()
-        cursor.execute('insert into task (name) values (?)', (text, ))
+        cursor.execute('insert into task (name, user_id) values (?, ?)', (text, user_id))
         connection.commit()
         connection.close()
 
@@ -128,6 +128,8 @@ def get_task_list(message):
         return bot.reply_to(message, 'вас нет в базе ')
     # print(user)
     tasks = db.get_tasks(user['id'])
+    if not tasks:
+        return bot.reply_to(message, 'у вас нет задач ')
     tasks = [task['name'] for task in tasks]
     tasks_string = '\n'.join(tasks)
     bot.reply_to(message, tasks_string)
@@ -152,8 +154,10 @@ def keyboard(message):
 @bot.message_handler(func=lambda message: True)
 def get_task(message):
     global user_state
+    telegram_id = message.chat.id
+    user = db.get_user(telegram_id)
     if user_state == ADD_STATE:
-        db.add_task(message.text)
+        db.add_task(message.text, user['id'] )
         user_state = ''
         bot.reply_to(message, 'Добавил в базу')
 
