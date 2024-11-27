@@ -52,6 +52,25 @@ class TaskModelSQL:
         connection.commit()
         connection.close()
 
+    def get_user(self, telegram_id):
+        connection = sqlite3.connect(self.db_name)
+        connection.row_factory = self._dict_factory
+
+        cursor = connection.cursor()
+        rows = cursor.execute('select * from user where telegram_id = ?', (telegram_id, )).fetchone()
+        connection.close()
+        return rows
+
+
+    def add_user(self, telegram_id):
+        connection = sqlite3.connect(self.db_name)
+        connection.row_factory = self._dict_factory
+
+        cursor = connection.cursor()
+        cursor.execute('insert into user (telegram_id) values (?)', (telegram_id, ))
+        connection.commit()
+        connection.close()
+
 
     @staticmethod
     def _dict_factory(cursor, row):
@@ -82,6 +101,13 @@ def start(message):
     markup.add(button)
     markup.add(button2)
 
+    telegram_id = message.chat.id
+    user = db.get_user(telegram_id)
+    print(telegram_id, user)
+    if not user:
+        db.add_user(telegram_id)
+        bot.reply_to(message, 'я вас добавил ')
+
     bot.send_message(message.chat.id, description, reply_markup=markup)
 
 
@@ -96,7 +122,12 @@ def add(message):
 @bot.message_handler(regexp='посмотреть задачи')
 @bot.message_handler(commands=["tasks"])
 def get_task_list(message):
-    tasks = db.get_tasks()
+    telegram_id = message.chat.id
+    user = db.get_user(telegram_id)
+    if not user:
+        return bot.reply_to(message, 'вас нет в базе ')
+    # print(user)
+    tasks = db.get_tasks(user['id'])
     tasks = [task['name'] for task in tasks]
     tasks_string = '\n'.join(tasks)
     bot.reply_to(message, tasks_string)
