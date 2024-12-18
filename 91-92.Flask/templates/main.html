@@ -8,17 +8,21 @@
 <h2>Главная страница</h2>
 
 {% for task in todo_data %}
-<p>{{ task['id'] }} -  {{ task['name'] }}</p>
+<p>{{  task.id }} -  {{ task['name'] }}</p>
 {% endfor %}
 
-<a href="http://127.0.0.1:5000/about">Страница контактов</a>
+<a href="http://127.0.0.1:5000/aboutpage">Страница контактов</a>
 
 <a href="{{ url_for('about_page') }}">Страница контактов</a>
 
 <h2>Cписок пользователей</h2>
 
 {% for user in users %}
-<p>{{ user['id'] }} -  {{ user['telegram_id'] }}</p>
+
+<p><a href="{{ url_for('user_tasks', user_id=user.id) }}"> Пользователь {{ user.id }} </a></p>
+
+<!--<p><a href="http://127.0.0.1:5000/tasks/1"> Пользователь 1 </a></p>-->
+<!--<p><a href="http://127.0.0.1:5000/tasks/2"> Пользователь 2 </a></p>-->
 {% endfor %}
 
 </body>

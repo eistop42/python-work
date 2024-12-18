@@ -1,8 +1,11 @@
+from typing import List
+
 from flask import Flask, render_template
+
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session, relationship
 from sqlalchemy import ForeignKey
-from  typing import List
 from flask_sqlalchemy import SQLAlchemy
+
 
 class Base(DeclarativeBase):
     pass
@@ -35,6 +38,7 @@ class User(Base):
 
 
 app = Flask(__name__)
+
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///C:\\Users\\Б - Преподаватель\\Documents\\Евдокимов Илья\\python-work\\db\\bot_todo.db"
 
 db = SQLAlchemy(model_class=Base)
@@ -46,6 +50,16 @@ todo = [{'id': 1, 'name': 'погулять'},
         ]
 
 
+# ООП MVC
+# model - база
+# view - как отобразить данные
+# contoller - ходит в model, выбирает нужный view
+
+
+# Framework MVC
+# model - база
+# template - как отобразить данные
+# view - ходит в model, выбирает нужный template
 
 @app.route('/')
 def main():
@@ -56,8 +70,18 @@ def main():
     return render_template('main.html', todo_data=todo_db, users=users)
 
 
-@app.route('/about')
+@app.route('/aboutpage')
 def about_page():
     return render_template('about.html')
 
+
+@app.route('/tasks/<int:user_id>')
+def user_tasks(user_id):
+    tasks = db.session.execute(db.select(Task).filter_by(user_id=user_id)).scalars().all()
+    return render_template('tasks.html',
+                           tasks=tasks, user_id=user_id)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
